@@ -38,6 +38,7 @@ const AddFriendButton = () => {
     } catch (error) {
       if(error instanceof z.ZodError){
         setError("email", {message: error.message});
+        console.log("it happening here")
         return
       }
 
