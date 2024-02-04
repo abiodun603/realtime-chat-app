@@ -10,7 +10,6 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const {email: emailToAdd} = addFriendValidator.parse(body.email);
-    console.log(emailToAdd);
 
     const idToAdd = (await fetchRedis(
       'get',
