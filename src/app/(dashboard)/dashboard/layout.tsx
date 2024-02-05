@@ -16,6 +16,8 @@ import { Icon, Icons } from "@/components/Icons";
 import SignOutButton from "@/components/SignOutButton";
 import FriendRequestsSidebarOption from "@/components/FriendRequestsSidebarOption";
 import { fetchRedis } from "@/helpers/redis";
+import { getFriendsByUserId } from "@/helpers/get-friends-by-user-id";
+import SidebarChatList from "@/components/SidebarChatList";
 
 interface LayoutProps {
   children: ReactNode
@@ -42,6 +44,8 @@ const Layout = async({ children}: LayoutProps) => {
   
   if(!session) notFound()
 
+  const friends = await getFriendsByUserId(session.user.id)
+
   const unseenRequestCount = (
     await fetchRedis(
       'smembers', 
@@ -54,12 +58,17 @@ const Layout = async({ children}: LayoutProps) => {
       <Link href="/dashboard" className="flex h-16 shrink-0 items-center">
         <Icons.Logo className="h-8 w-auto text-indigo-600" />
       </Link>
-      <p className="text-xs font-semibold leading-6 text-gray-400">
+      {friends.length > 0 ? (
+        <p className="text-xs font-semibold leading-6 text-gray-400">
         Your chats
-      </p>
+        </p>
+      ): null}
+     
       <nav className="flex flex-1 flex-col">
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
-          <li>chats that this user has</li>
+          <li>
+            <SidebarChatList friends={friends} />
+          </li>
           <li>
             <div className="text-xs font-semibold leading-6 text-gray-400">
               Overview
@@ -78,13 +87,13 @@ const Layout = async({ children}: LayoutProps) => {
                   </li>
                 )
               })}
+              <li>
+                <FriendRequestsSidebarOption 
+                  sessionId={session.user.id} 
+                  initiaUnseenRequestCount={unseenRequestCount}
+                />
+              </li>
             </ul>
-          </li>
-          <li>
-            <FriendRequestsSidebarOption 
-              sessionId={session.user.id} 
-              initiaUnseenRequestCount={unseenRequestCount}
-            />
           </li>
           <li className="-mx-6 mt-auto flex items-center">
             <div className="flex flex-1 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900">
