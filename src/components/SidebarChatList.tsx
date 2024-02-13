@@ -1,8 +1,17 @@
-import React from 'react'
+import React, { FC } from 'react'
 
-const SidebarChatList = () => {
+interface SidebarChatListProps {
+  friends: User[]
+}
+const SidebarChatList: FC<SidebarChatListProps> = ({friends}) => {
   return (
-    <div>SidebarChatList</div>
+    <ul role='list' className='max-h-[25rem] overflow-y-auto -mx-2 space-y-1'>
+      {
+        friends.sort().map((friend) =>{
+          <div className=""></div>
+        })
+      }
+    </ul>
   )
 }
 
